@@ -1,5 +1,7 @@
 package mvc;
 
+import core.Sparrow;
+import org.apache.log4j.Logger;
 import org.thymeleaf.context.WebContext;
 
 import javax.servlet.Servlet;
@@ -19,6 +21,7 @@ import static thirdparty.ThymeleafEngine.getTemplateEngine;
 public class Router {
     // Don't change these variable names since we use their names to access theirs values via reflection
     private static final Router $r = new Router();
+    private static final Logger logger = Logger.getLogger(Sparrow.class);
 
     private Map<String, Servlet> $servletMap = new HashMap<>();
 

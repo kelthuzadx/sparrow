@@ -90,3 +90,36 @@ public class LoginPage {
 
 视图是一个抽象的概念，它关联逻辑页面和页面数据。sparrow会负责页面选择，渲染和数据的填充。
 在这里，用户只需要关系要跳转的页面是哪个，需要给这个页面哪些数据。
+
+
+# 路由
+在sparrow中定义一个路由非常方便，有多种方式可供选择：
+```java
+public class DefineRouter {
+    public static void main(String[] args) {
+        // 路由到html
+        Router.get("/a",model -> View.create("home.html"));
+
+        // 路由到jsp
+        Router.get("/b",model-> View.create("index.jsp"));
+
+        // 返回带模型的视图，随后sparrow会负责视图解析
+        Router.get("/d",model -> {
+            model.set("greeting","hi");
+            return View.create("home.html",model);
+        });
+
+        // 直接使用原生servlet，不经过视图解析
+        Router.get("/c",(req,resp)-> {
+            try {
+                resp.getWriter().println("<p>rendering page without view resolving</p>");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Sparrow.fly();
+    }
+}
+
+```
