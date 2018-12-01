@@ -63,7 +63,11 @@ public class Router {
             }
         } else {
             try {
-                req.getRequestDispatcher(view.getViewPath()).forward(req, resp);
+                if (req.getMethod().equals("GET")) {
+                    req.getRequestDispatcher(view.getViewPath()).forward(req, resp);
+                } else {
+                    resp.sendRedirect(view.getViewPath());
+                }
             } catch (ServletException | IOException e) {
                 e.printStackTrace();
             }

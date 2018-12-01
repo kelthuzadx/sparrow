@@ -7,7 +7,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 public class ThymeleafEngine {
     private static TemplateEngine templateEngine = new TemplateEngine();
 
-    public static void initializeThymeleaf(ServletContextTemplateResolver templateResolver) {
+    static void initializeThymeleaf(ServletContextTemplateResolver templateResolver) {
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setPrefix("/");
         templateResolver.setSuffix(".html");
