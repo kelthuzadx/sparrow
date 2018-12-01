@@ -30,22 +30,16 @@ public final class Sparrow {
     }
 
 
-    public static Sparrow setJspBase(String docPath) {
-        Configurator.jspDocBase = docPath;
-        return sparrow;
-    }
-
-    @SuppressWarnings("unused")
     public static void fly() {
-        sparrow.start();
+        sparrow.readProperties();
+        sparrow.createContext();
+        sparrow.integrateThirdparty();
+        RouterManager.registerPredefinedRouter();
+        RouterManager.registerUserDefinedRouter(sparrow.tomcat, sparrow.internalContext);
+        sparrow.serve();
     }
 
-    private void start() {
-        createContext();
-        integrateThirdparty();
-        RouterManager.registerPredefinedRouter();
-        RouterManager.registerUserDefinedRouter(tomcat, internalContext);
-        serve();
+    private void readProperties() {
     }
 
     private void createContext() {
