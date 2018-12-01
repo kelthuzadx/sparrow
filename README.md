@@ -16,13 +16,15 @@ sparrow是一个轻量级的java web框架。"麻雀虽小五脏俱全"，sparro
 ```
 或者也可以下载sparrow jar并手动配置buildpath.准备好依赖后让我们开始吧！
 
-# 集成
-| Name | Option |
+# 预先集成
+sparrow预继承了一些第三方框架，用户可以根据需要选择是否禁用。
+| Name | Status |
 | :---: | ------ |
-|![](docs/thymeleaf_logo.png) |  默认开启 |
+|![](docs/thymeleaf_logo.png) | 默认集成 |
 
 
-## 快速开始： hello sparrow
+# 示例
+## 1：hello sparrow
 
 新建一个类如`HelloSparrow.java`:
 ```java
@@ -53,10 +55,11 @@ public class HelloSparrow {
 
 如果需要自定义jsp存放目录，那么在`Sparrow.fly()`前指定即可：
 ```java
-Sparrow.setJspBase("my_favorite_path/");
+Configurator.setJspBase("my_favorite_path/");
 ```
+更多配置选项请参见文档。
 
-## 快速开始：用户登录
+## 2：用户登录
 总是hello world多无聊，这个示例将进一步，做一个有实际意义的登录页面，嗯...这里的实际意义指的是他的用途而不是这个示例：
 
 老规矩新建`src/main/webapp`文件夹，加入一个`login.jsp`：
@@ -92,7 +95,8 @@ public class LoginPage {
 在这里，用户只需要关系要跳转的页面是哪个，需要给这个页面哪些数据。
 
 
-# 路由
+# 文档
+## 1.路由
 在sparrow中定义一个路由非常方便，有多种方式可供选择：
 ```java
 public class DefineRouter {
@@ -121,6 +125,13 @@ public class DefineRouter {
         Sparrow.fly();
     }
 }
-
 ```
 
+## 2.配置
+可以通过配置改变sparrow的内部行为，预定义配置及更改配置方法如下：
+
+| 配置项 | 默认 | 选项 |
+| :-----: | ----- | ----- |
+| jsp存放位置 | `src/main/webapp/` | Configurator.setJspBase(docPath) |
+| 集成thymeleaf | 默认集成 | Configurator.disableThymeleaf() |
+| sparrow配置文件名 | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |
