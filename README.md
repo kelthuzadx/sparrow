@@ -18,6 +18,7 @@ sparrow是一个轻量级的java web框架。"麻雀虽小五脏俱全"，sparro
 
 # 预先集成
 sparrow预继承了一些第三方框架，用户可以根据需要选择是否禁用。
+
 | Name | Status |
 | :---: | ------ |
 |![](docs/thymeleaf_logo.png) | 默认集成 |
