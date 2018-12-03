@@ -155,13 +155,12 @@ Router.get("/c",(req,resp)-> {
 ```
 
 ## 2. Database template
-Sparrow database template provides a simple way to do CRUD works
- without caring about connection getting and resource releasing. Public APIs of it are as follows:
+sparrow数据库模板让我们关注于业务，而无需手动管理资源和处理异常。它有如下公开API：
 ```java
 public class DBTemplate{
-    // Get one row by given sql
+    // 获取一行数据
     public static void queryOne(String sql, Row row);
-    // Get multi rows by given sql
+    // 获取多行数据
     public static void queryList(String sql,MultiRow multiRow);
 }
 ```
