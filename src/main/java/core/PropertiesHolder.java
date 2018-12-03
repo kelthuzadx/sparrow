@@ -2,10 +2,8 @@ package core;
 
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertiesHolder {
@@ -16,10 +14,8 @@ public class PropertiesHolder {
 
     private PropertiesHolder() {
         props = new Properties();
-
-        try (FileInputStream fi = new FileInputStream(Configurator.propertiesFileName);
-             InputStream in = new BufferedInputStream(fi)) {
-            props.load(in);
+        try {
+            props.load(new FileInputStream("src/main/resources/" + Configurator.propertiesFileName));
             logger.info("found " + Configurator.propertiesFileName + " for sparrow");
         } catch (IOException e) {
             logger.warn("failed to read " + Configurator.propertiesFileName);
