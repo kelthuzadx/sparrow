@@ -49,9 +49,11 @@ public class HelloSparrow {
     }
 }
 ```
-启动后浏览器输入`localhost:8080/hello`即可看到页面渲染结果。
+启动后浏览器输入`localhost:8080/hello`即可看到页面渲染结果。其实，sparrow还预定了一个`/hello`页面，可以直接访问：
 
-另外，Sparrow默认支持jsp+servlet混合模式。Sparrow默认存放jsp的文件夹是`src/main/webapp`，
+![](docs/hello.png)
+
+另外，Sparrow默认支持jsp+servlet混合模式。Sparrow默认存放jsp的文件夹是`src/main/resources`，
 所以要使用jsp，首先要新建该文件夹：
 
 ![](docs/jsp_docbase.png)
@@ -67,7 +69,7 @@ Configurator.setJspBase("my_favorite_path/");
 ## 2：用户登录
 总是hello world多无聊，这个示例将进一步，做一个有实际意义的登录页面，嗯...这里的实际意义指的是他的用途而不是这个示例：
 
-老规矩新建`src/main/webapp`文件夹，加入一个`login.jsp`：
+老规矩新建`src/main/resources`文件夹，加入一个`login.jsp`：
 ```java
     <form action="/loginCheck" method="post">
         Username: <label><input name="username" type="text"/></label><br/>
@@ -170,6 +172,6 @@ public class DBTemplate{
 
 | 配置项 | 默认 | 选项 |
 | :-----: | ----- | ----- |
-| jsp存放位置 | `src/main/webapp/` | Configurator.setJspBase(docPath) |
+| jsp存放位置 | `src/main/resources/` | Configurator.setJspBase(docPath) |
 | 集成thymeleaf | 默认集成 | Configurator.disableThymeleaf() |
 | sparrow配置文件名 | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |

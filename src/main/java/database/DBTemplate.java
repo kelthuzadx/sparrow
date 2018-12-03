@@ -4,10 +4,7 @@ import core.PropertiesHolder;
 import core.Sparrow;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DBTemplate {
     private static final DBTemplate dbt = new DBTemplate();
@@ -24,24 +21,35 @@ public class DBTemplate {
         con = getConnection();
     }
 
-    private static ResultSet getResultSet(String sql) {
-        ResultSet rs = null;
-
+    private static PreparedStatement getPreparedStatement(String sql) {
+        PreparedStatement pr = null;
         try {
-            rs = dbt.con.prepareStatement(sql).executeQuery();
+            pr = dbt.con.prepareStatement(sql);
         } catch (SQLException e) {
-            logger.error("can not execute " + sql + " due to create statement failure or execution failure");
+            logger.error("can not get prepared statement due to internal problem");
+        }
+        return pr;
+    }
+
+    private static ResultSet getResultSet(PreparedStatement pr) {
+        ResultSet rs = null;
+        try {
+            rs = pr.executeQuery();
+        } catch (SQLException e) {
+            logger.error("can not get result set");
         }
         return rs;
     }
 
     public static void queryOne(String sql, Row row) {
-        ResultSet rs = getResultSet(sql);
+        PreparedStatement pr = getPreparedStatement(sql);
+        ResultSet rs = getResultSet(pr);
 
         try {
             if (rs != null && rs.next()) {
                 row.getRow(rs);
                 rs.close();
+                pr.close();
             }
         } catch (SQLException e) {
             logger.error("retrived result set from database but can not inspect its internal data");
@@ -49,13 +57,15 @@ public class DBTemplate {
     }
 
     public static void queryList(String sql, MultiRow multiRow) {
-        ResultSet rs = getResultSet(sql);
+        PreparedStatement pr = getPreparedStatement(sql);
+        ResultSet rs = getResultSet(pr);
 
         try {
             while (rs.next()) {
                 multiRow.getMultiRow(rs);
             }
             rs.close();
+            pr.close();
         } catch (SQLException e) {
             logger.error("retrived result set from database but can not inspect its internal data");
         }

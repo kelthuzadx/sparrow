@@ -40,7 +40,7 @@ import java.io.IOException;
 
 public class HelloSparrow {
     public static void main(String[] args) {
-        Router.get("/hello", (req, resp) -> {
+        Router.get("/hi", (req, resp) -> {
             try {
                 resp.getWriter().println("hello world");
             } catch (IOException e) {
@@ -54,9 +54,12 @@ public class HelloSparrow {
 ```
 That's all we need to do if we use sparrow! We are no longer need to download tomcat server, check its version with your local jdk, configure it, write web.xml or use @WebX annotations, and so on...
 That's so damn work for novice. Here we just open browser and access `localhost:8080/hello` we will see our works, that is, a simple greeting message:)
+And more interesting, sparrow pre-defines a `/hello` page, it shows a friendly message for those new users:
+
+![](docs/hello.png)
 
 Moreover, sparrow internally supports `jsp`+`servlet` mixed mode.
-The default `jsp` base directory is `src/main/webapp`, which is relative to your project path.
+The default `jsp` base directory is `src/main/resources`, which is relative to your project path.
 We need to create that directory if we want to use jsp:
 
 ![](docs/jsp_docbase.png)
@@ -72,7 +75,7 @@ For more details about various configurations and their explanations, see sparro
 ## 2：User login
 Writing hello world tend to be somewhat boring, so here we will illustrate a useful login page:
 
-As I said before, createing a directory `src/main/webapp` and putting `login.jsp` into that dir firstly：
+As I said before, createing a directory `src/main/resources` and putting `login.jsp` into that dir firstly：
 ```java
     <form action="/loginCheck" method="post">
         Username: <label><input name="username" type="text"/></label><br/>
@@ -179,7 +182,7 @@ These methods are as follows：
 
 | Item | Default | Option |
 | :-----: | ----- | ----- |
-| jsp base dir | `src/main/webapp/` | Configurator.setJspBase(docPath) |
+| jsp base dir | `src/main/resources/` | Configurator.setJspBase(docPath) |
 | integrate thymeleaf | Yes | Configurator.disableThymeleaf() |
 | sparrow properties namr | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |
 

@@ -47,7 +47,7 @@ public final class Sparrow {
             internalContext = tomcat.addWebapp(DEFAULT_CONTEXT_PATH,
                     new File(Configurator.jspDocBase).getAbsolutePath());
         } catch (ServletException e) {
-            e.printStackTrace();
+            logger.warn("there is not jsp base dir");
         }
     }
 

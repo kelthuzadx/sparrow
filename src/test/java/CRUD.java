@@ -13,6 +13,5 @@ public class CRUD {
             System.out.println(result.getString("video_title"));
             System.out.println(result.getString("video_file_name"));
         });
-
     }
 }
