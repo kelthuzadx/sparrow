@@ -6,10 +6,10 @@
 [中文](README.md) |
 [English](README_EN.md)
 
-sparrow是一个轻量级的java web框架。"麻雀虽小五脏俱全"，sparrow虽然轻量小巧，但包含了web开发所有必要的基础设施，
-它还集成了一些第三方框架，以此实现最大程度的灵活性和可用性。
+**sparrow** is a lightweight java web framework. It's tiny yet but actually tend to be contained almost all infrastructural tools and utilities for web developing. Besides, sparrow integrates some full tested third-party libraries/frameworks such as thymeleaf template engine and redis in-memory database
+so that we don't need to invent everything we use.
 
-在开始使用前，需要在`pom.xml`中添加并导入sparrow依赖
+To use sparrow, we need add relative dependencies in `pom.xml`and import it:
 ```xml
 <dependency>
     <groupId>com.github.racaljk</groupId>
@@ -17,20 +17,23 @@ sparrow是一个轻量级的java web框架。"麻雀虽小五脏俱全"，sparro
     <version>1.0.1-snapshot</version>
 </dependency>
 ```
-或者也可以下载sparrow jar并手动配置buildpath.准备好依赖后让我们开始吧！
+Or you can download `sparraw.jar` and append relative dependencies into your IDE's buildpath (Not recommend).
 
-# 预先集成
-sparrow预继承了一些第三方框架，用户可以根据需要选择是否禁用。
+
+# Integration
+By default, sparrow integrates some widely used third-party frameworks.
+You can disable them or change predefined configurations of them.
 
 | Name | Status |
 | :---: | ------ |
-|![](docs/thymeleaf_logo.png) | 默认集成 |
+|![](docs/thymeleaf_logo.png) | Integrated |
+|![](docs/mysql_logo.png) | Integrated |
 
 
-# 示例
+# Demos
 ## 1：hello sparrow
 
-新建一个类如`HelloSparrow.java`:
+Create a file named `HelloSparrow.java`:
 ```java
 import java.io.IOException;
 
@@ -48,25 +51,27 @@ public class HelloSparrow {
     }
 }
 ```
-启动后浏览器输入`localhost:8080/hello`即可看到页面渲染结果。
+That's all we need to do if we use sparrow! We are no longer need to download tomcat server, check its version with your local jdk, configure it, write web.xml or use @WebX annotations, and so on...
+That's so damn work for novice. Here we just open browser and access `localhost:8080/hello` we will see our works, that is, a simple greeting message:)
 
-另外，Sparrow默认支持jsp+servlet混合模式。Sparrow默认存放jsp的文件夹是`src/main/webapp`，
-所以要使用jsp，首先要新建该文件夹：
+Moreover, sparrow internally supports `jsp`+`servlet` mixed mode.
+The default `jsp` base directory is `src/main/webapp`, which is relative to your project path.
+We need to create that directory if we want to use jsp:
 
 ![](docs/jsp_docbase.png)
 
-现在访问`localhost:8080/index.jsp`就能渲染jsp页面。
+Now access `localhost:8080/index.jsp`, your newly created `jsp` page would be rendered soon.
 
-如果需要自定义jsp存放目录，那么在`Sparrow.fly()`前指定即可：
+You can also specify a different jsp base before starting sparrow, it barely requires you to call a method and pass your favorite path argument:
 ```java
 Configurator.setJspBase("my_favorite_path/");
 ```
-更多配置选项请参见文档。
+For more details about various configurations and their explanations, see sparrow's corresponding documentation.
 
-## 2：用户登录
-总是hello world多无聊，这个示例将进一步，做一个有实际意义的登录页面，嗯...这里的实际意义指的是他的用途而不是这个示例：
+## 2：User login
+Writing hello world tend to be somewhat boring, so here we will illustrate a useful login page:
 
-老规矩新建`src/main/webapp`文件夹，加入一个`login.jsp`：
+As I said before, createing a directory `src/main/webapp` and putting `login.jsp` into that dir firstly：
 ```java
     <form action="/loginCheck" method="post">
         Username: <label><input name="username" type="text"/></label><br/>
@@ -75,7 +80,9 @@ Configurator.setJspBase("my_favorite_path/");
         <label><input name="submit" type="submit"/> </label>
     </form>
 ```
-用户点击提交后会跳转到`/loginCheck` ,那么我们还得写个`/loginCheck`的逻辑：
+Sparrow would forward user's request to `/loginCheck` as long as submit button was be clicked.
+Now we need to write corresponding login checking logic:
+
 ```java
 public class LoginPage {
     private static final String USER_NAME = "yang";
@@ -92,32 +99,30 @@ public class LoginPage {
     }
 }
 ```
-`model.get()`方法可以获取用户提交的表单数据，如果数据有多个如`option,select`等则需要`model.getMulti()`。
-这里的判断实在太简单了，实际情况下更可能是从数据库检索用户名密码是否匹配。最后根据匹配结果返回视图。
+The method `model.get()` retrives user submitted form data and match them with given username and password,
+then redirect to new age according to matching result. In a real world product, it's more likely to query
+username and password from remote database. Here we use hard code approach since we don't want to introduce
+complexity. This demo is subject to change since sparrow database template is under developing.
 
-视图是一个抽象的概念，它关联逻辑页面和页面数据。sparrow会负责页面选择，渲染和数据的填充。
-在这里，用户只需要关系要跳转的页面是哪个，需要给这个页面哪些数据。
-
-
-# 文档
-## 1.路由
-在sparrow中定义一个路由非常方便，有多种方式可供选择：
+# Documentation
+## 1.Router
+There are many ways to define user routers, you can choose your favorite one：
 ```java
 public class DefineRouter {
     public static void main(String[] args) {
-        // 路由到html
+        // Route to html
         Router.get("/a",model -> View.create("home.html"));
 
-        // 路由到jsp
+        // Route to jsp
         Router.get("/b",model-> View.create("index.jsp"));
 
-        // 返回带模型的视图，随后sparrow会负责视图解析
+        // Returm a model bundled view, it will be resolved by sparrow later
         Router.get("/d",model -> {
             model.set("greeting","hi");
             return View.create("home.html",model);
         });
 
-        // 直接使用原生servlet，不经过视图解析
+        // Use native servlet and ignore view resolving phase
         Router.get("/c",(req,resp)-> {
             try {
                 resp.getWriter().println("<p>rendering page without view resolving</p>");
@@ -131,11 +136,15 @@ public class DefineRouter {
 }
 ```
 
-## 2.配置
-可以通过配置改变sparrow的内部行为，预定义配置及更改配置方法如下：
+## 2.Configuration
+You can change sparrow's intrinsic behaviors by calling `Configurator` methods, these methods are as follows：
 
-| 配置项 | 默认 | 选项 |
+| Item | Default | Option |
 | :-----: | ----- | ----- |
-| jsp存放位置 | `src/main/webapp/` | Configurator.setJspBase(docPath) |
-| 集成thymeleaf | 默认集成 | Configurator.disableThymeleaf() |
-| sparrow配置文件名 | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |
+| jsp base dir | `src/main/webapp/` | Configurator.setJspBase(docPath) |
+| integrate thymeleaf | Yes | Configurator.disableThymeleaf() |
+| sparrow properties namr | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |
+
+
+# License
+`Sparrow` was licensed under the [MIT](LICENSE) license.
