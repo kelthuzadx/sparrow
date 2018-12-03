@@ -4,7 +4,9 @@ import core.PropertiesHolder;
 import core.Sparrow;
 import org.apache.log4j.Logger;
 
+import java.lang.reflect.Field;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DBTemplate {
     private static final DBTemplate dbt = new DBTemplate();
@@ -52,8 +54,60 @@ public class DBTemplate {
                 pr.close();
             }
         } catch (SQLException e) {
-            logger.error("retrived result set from database but can not inspect its internal data");
+            logger.error("retrieved result set from database but can get one row data");
         }
+    }
+
+    public static <T> T queryOne(String sql, Class<T> type) {
+        PreparedStatement pr = getPreparedStatement(sql);
+        ResultSet rs = getResultSet(pr);
+
+        try {
+            if (rs != null && rs.next()) {
+                T object = type.newInstance();
+
+                Field[] fs = type.getDeclaredFields();
+                for (Field f : fs) {
+                    f.setAccessible(true);
+                    f.set(object, rs.getObject(f.getName()));
+                }
+                rs.close();
+                pr.close();
+                return object;
+            }
+        } catch (SQLException e) {
+            logger.error("retrieved result set from database but can get one row data");
+        } catch (IllegalAccessException | InstantiationException e) {
+            logger.error("retrieved result set from database but can map columns to specific object fields");
+        }
+        return null;
+    }
+
+    public static <T> ArrayList<T> queryList(String sql, Class<T> type) {
+        PreparedStatement pr = getPreparedStatement(sql);
+        ResultSet rs = getResultSet(pr);
+
+        try {
+            ArrayList<T> list = new ArrayList<>();
+
+            while (rs.next()) {
+                T object = type.newInstance();
+                Field[] fs = type.getDeclaredFields();
+                for (Field f : fs) {
+                    f.setAccessible(true);
+                    f.set(object, rs.getObject(f.getName()));
+                }
+                list.add(object);
+            }
+            rs.close();
+            pr.close();
+            return list;
+        } catch (SQLException e) {
+            logger.error("retrieved result set from database but can not get multi row data");
+        } catch (IllegalAccessException | InstantiationException e) {
+            logger.error("retrieved result set from database but can map columns to specific object fields");
+        }
+        return null;
     }
 
     public static void queryList(String sql, MultiRow multiRow) {
@@ -67,7 +121,7 @@ public class DBTemplate {
             rs.close();
             pr.close();
         } catch (SQLException e) {
-            logger.error("retrived result set from database but can not inspect its internal data");
+            logger.error("retrieved result set from database but can not get multi row data");
         }
     }
 
