@@ -3,6 +3,9 @@
 ![](https://img.shields.io/badge/project--status-under%20developing-yellow.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.racaljk/sparrow.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.racaljk%22%20AND%20a:%22sparrow%22)
 
+[中文](README.md) |
+[English](README_EN.md)
+
 sparrow是一个轻量级的java web框架。"麻雀虽小五脏俱全"，sparrow虽然轻量小巧，但包含了web开发所有必要的基础设施，
 它还集成了一些第三方框架，以此实现最大程度的灵活性和可用性。
 
