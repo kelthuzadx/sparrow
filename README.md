@@ -6,7 +6,7 @@
 [中文](README_CN.md) |
 [English](README.md)
 
-**sparrow** is a lightweight java web framework. It's tiny and lightweight but actually containes almost all infrastructural tools and utilities for web developing. Besides, sparrow integrates some full tested third-party libraries/frameworks such as thymeleaf template engine and redis in-memory database
+**sparrow** is a lightweight java web framework. It's tiny and lightweight but actually contains almost all infrastructural tools and utilities for web developing. Besides, sparrow integrates some full tested third-party libraries/frameworks such as thymeleaf template engine and redis in-memory database
 so that we don't need to invent everything we use.
 
 To use sparrow, we need add its dependencies in `pom.xml`and import it:
@@ -14,7 +14,7 @@ To use sparrow, we need add its dependencies in `pom.xml`and import it:
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.1-snapshot</version>
+    <version>1.0.2-snapshot</version>
 </dependency>
 ```
 Or you can download `sparraw.jar` and append relative dependencies into your IDE's `buildpath`
@@ -28,7 +28,7 @@ You can disable them or change predefined configurations of them.
 | Name | Status |
 | :---: | ------ |
 |![](docs/thymeleaf_logo.png) | Integrated |
-|![](docs/mysql_logo.png) | Integrated and replace another |
+|![](docs/mysql_logo.png) | Integrated |
 
 
 # Demos
