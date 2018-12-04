@@ -1,4 +1,4 @@
-# ![](docs/logo.png) sparrow: A pretty lightweight java web framework
+# ![](docs/sparrow.png) sparrow: A pretty lightweight java web framework
 
 ![](https://img.shields.io/badge/project--status-under%20developing-yellow.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.racaljk/sparrow.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.racaljk%22%20AND%20a:%22sparrow%22)
