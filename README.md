@@ -14,7 +14,7 @@ To use sparrow, we need add its dependencies in `pom.xml`and import it:
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.2-snapshot</version>
+    <version>1.0.3-snapshot</version>
 </dependency>
 ```
 Or you can download `sparraw.jar` and append relative dependencies into your IDE's `buildpath`
