@@ -117,7 +117,8 @@ database.password=root
 database.url=jdbc:mysql://localhost:3306/videohub?serverTimezone=GMT
 database.driver-class=com.mysql.jdbc.Driver
 ```
-When you configured above properties, you can use sparrow database template. It's pretty easy to use,
+When you configured above properties, you can use sparrow database template to query
+by both concatenated SQL or parameterized SQL, they're pretty easy to use,
 and thanks to java 8 lambda we have even more concise code:
 ```java
 DBTemplate.queryOne("select * from videohub_user where id=1", result->{
@@ -131,6 +132,18 @@ DBTemplate.queryList("select * from videohub_resource", result->{
     System.out.println(result.getString("video_title"));
     System.out.println(result.getString("video_file_name"));
 });
+
+// parameterized sql is also supported
+DBTemplate.queryOne("select * from videohub_user where id=? and username=? and password=?", new Object[]{1, "yang", "123"},
+        result -> {
+            System.out.println(result.getString("username"));
+            System.out.println(result.getString("email"));
+            System.out.println(result.getString("password"));
+        });
+List<User> userList1 = DBTemplate.queryList(
+        "select * from videohub_user where id=? and username=? and password=?", new Object[]{1, "yang", "123"},
+        User.class);
+System.out.println(userList1);
 ```
 In fact, sparrow could do better. If you've used some ORM frameworks before, you will be familiar with the following style.
 To illustrate that we should define a domain class like:
@@ -193,10 +206,21 @@ public class DBTemplate{
     public static void queryOne(String sql, Row row);
     // Get multi rows by given sql
     public static void queryList(String sql,MultiRow multiRow);
+
     // Get one row by given sql and map result columns to specific domain type
     public static <T> T queryOne(String sql, Class<T> type);
     // Get multi rows by given sql and map result columns to specif domain type
     public static <T> ArrayList<T> queryList(String sql, Class<T> type);
+
+    // Get one row by parameterized sql and its arguments
+    public static void queryOne(String sql, Object[] params, Row row)
+    public static <T> T queryOne(String sql, Object[] params, Class<T> type)
+
+    // Get multi rows by parameterized sql and its arguments
+    public static <T> ArrayList<T> queryList(String sql, Class<T> type)
+    public static <T> ArrayList<T> queryList(String sql, Object[] params, Class<T> type)
+    public static void queryList(String sql, MultiRow multiRow)
+    public static void queryList(String sql, Object[] params, MultiRow multiRow)
 }
 ```
 
@@ -211,8 +235,8 @@ These methods are as follows：
 | sparrow properties namr | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |
 
 # 4. Tool
-You may have to write many boilerplate codes to generate captcha, to validate user, to ...:
-here we already prepared for you:
+You may have to write many boilerplate codes to generate captcha, to validate form data requested by clients, to ...:
+That's no longer necessary if you intend to use sparrow, since we already prepared them as originally provided tools for you:
 ## Generate CAPTCHA
 ```java
 import tool.CaptchaGenerator;

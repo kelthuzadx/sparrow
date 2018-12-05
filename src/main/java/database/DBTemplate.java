@@ -25,16 +25,17 @@ public class DBTemplate {
         } catch (ClassNotFoundException e) {
             logger.error("can not load database driver class" + driverName);
         }
-        con = getConnection();
     }
 
     private static PreparedStatement getPreparedStatement(String sql) {
+        dbt.con = dbt.getConnection();
+
         PreparedStatement pr = null;
         try {
             pr = dbt.con.prepareStatement(sql);
             logger.debug("executing sql: " + sql);
         } catch (SQLException e) {
-            logger.error("can not get prepared statement due to internal problem");
+            logger.error("can not get prepared statement");
         }
         return pr;
     }
@@ -44,7 +45,7 @@ public class DBTemplate {
         try {
             rs = pr.executeQuery();
         } catch (SQLException e) {
-            logger.error("can not get result set");
+            logger.error("can not get result set after sql executed");
         }
         return rs;
     }
@@ -52,7 +53,7 @@ public class DBTemplate {
     private static String fillSqlPlaceholder(String oldSql, Object[] params) {
         String concatedSql = oldSql;
         for (int i = 0; i < params.length; i++) {
-            if (params[i] instanceof String) {
+            if (params[i] instanceof String || params[i] instanceof Date) {
                 concatedSql = concatedSql.replaceFirst("\\?", "'" + params[i] + "'");
             } else {
                 concatedSql = concatedSql.replaceFirst("\\?", "" + params[i]);
@@ -73,10 +74,20 @@ public class DBTemplate {
             if (rs != null && rs.next()) {
                 row.getRow(rs);
                 rs.close();
-                pr.close();
             }
         } catch (SQLException e) {
             logger.error("retrieved result set from database but can get one row data");
+        } finally {
+            try {
+                pr.close();
+            } catch (SQLException e) {
+                logger.error("failed to close prepared statement resource");
+            }
+            try {
+                dbt.con.close();
+            } catch (SQLException e) {
+                logger.error("failed to close database connection");
+            }
         }
     }
 
@@ -98,13 +109,24 @@ public class DBTemplate {
                     f.set(object, rs.getObject(f.getName()));
                 }
                 rs.close();
-                pr.close();
+
                 return object;
             }
         } catch (SQLException e) {
             logger.error("retrieved result set from database but can get one row data");
         } catch (IllegalAccessException | InstantiationException e) {
             logger.error("retrieved result set from database but can map columns to specific object fields");
+        } finally {
+            try {
+                pr.close();
+            } catch (SQLException e) {
+                logger.error("failed to close prepared statement resource");
+            }
+            try {
+                dbt.con.close();
+            } catch (SQLException e) {
+                logger.error("failed to close database connection");
+            }
         }
         return null;
     }
@@ -129,12 +151,22 @@ public class DBTemplate {
             } else {
                 logger.debug("empty result set returned for sql " + sql);
             }
-            pr.close();
             return list;
         } catch (SQLException e) {
             logger.error("retrieved result set from database but can not get multi row data");
         } catch (IllegalAccessException | InstantiationException e) {
             logger.error("retrieved result set from database but can map columns to specific object fields");
+        } finally {
+            try {
+                pr.close();
+            } catch (SQLException e) {
+                logger.error("failed to close prepared statement resource");
+            }
+            try {
+                dbt.con.close();
+            } catch (SQLException e) {
+                logger.error("failed to close database connection");
+            }
         }
         return null;
     }
@@ -156,9 +188,19 @@ public class DBTemplate {
             } else {
                 logger.debug("empty result set returned for sql " + sql);
             }
-            pr.close();
         } catch (SQLException e) {
             logger.error("retrieved result set from database but can not get multi row data");
+        } finally {
+            try {
+                pr.close();
+            } catch (SQLException e) {
+                logger.error("failed to close prepared statement resource");
+            }
+            try {
+                dbt.con.close();
+            } catch (SQLException e) {
+                logger.error("failed to close database connection");
+            }
         }
     }
 
@@ -174,7 +216,7 @@ public class DBTemplate {
         try {
             return DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            logger.error("can not get connection by " + url + "with " + username + "@" + password);
+            logger.error("can not get connection by " + url + " with " + username + "@" + password);
         }
 
         return con;
