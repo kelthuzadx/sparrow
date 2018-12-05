@@ -52,11 +52,11 @@ public class DBTemplate {
 
     private static String fillSqlPlaceholder(String oldSql, Object[] params) {
         String concatedSql = oldSql;
-        for (int i = 0; i < params.length; i++) {
-            if (params[i] instanceof String || params[i] instanceof Date) {
-                concatedSql = concatedSql.replaceFirst("\\?", "'" + params[i] + "'");
+        for (Object param : params) {
+            if (param instanceof String || param instanceof Date) {
+                concatedSql = concatedSql.replaceFirst("\\?", "'" + param + "'");
             } else {
-                concatedSql = concatedSql.replaceFirst("\\?", "" + params[i]);
+                concatedSql = concatedSql.replaceFirst("\\?", "" + param);
             }
         }
         return concatedSql;

@@ -1,5 +1,6 @@
 package thirdparty;
 
+import core.PropertiesHolder;
 import core.Sparrow;
 import org.apache.log4j.Logger;
 import org.thymeleaf.TemplateEngine;
@@ -12,10 +13,10 @@ public class ThymeleafEngine {
 
     static void initializeThymeleaf(ServletContextTemplateResolver templateResolver) {
         templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setPrefix("/");
-        templateResolver.setSuffix(".html");
-        templateResolver.setCacheTTLMs(3600000L);
-        templateResolver.setCacheable(true);
+        templateResolver.setPrefix(PropertiesHolder.readProp("thymeleaf.prefix"));
+        templateResolver.setSuffix(PropertiesHolder.readProp("thymeleaf.suffix"));
+        templateResolver.setCacheTTLMs(Long.valueOf(PropertiesHolder.readProp("thymeleaf.cacheTTLMs")));
+        templateResolver.setCacheable(Boolean.valueOf(PropertiesHolder.readProp("thymeleaf.enableCache")));
         templateEngine.setTemplateResolver(templateResolver);
         logger.debug("integrated Thymeleaf template engine into sparrow");
     }
