@@ -1,7 +1,7 @@
 package database;
 
 import core.PropertiesHolder;
-import core.Sparrow;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
@@ -9,8 +9,13 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class DBTemplate {
+    private static final Logger logger = Logger.getLogger(DBTemplate.class);
+
     private static final DBTemplate dbt = new DBTemplate();
-    private static final Logger logger = Logger.getLogger(Sparrow.class);
+
+    static {
+        BasicConfigurator.configure();
+    }
     private Connection con = null;
 
     private DBTemplate() {
@@ -27,6 +32,7 @@ public class DBTemplate {
         PreparedStatement pr = null;
         try {
             pr = dbt.con.prepareStatement(sql);
+            logger.debug("executing sql: " + sql);
         } catch (SQLException e) {
             logger.error("can not get prepared statement due to internal problem");
         }
@@ -43,6 +49,22 @@ public class DBTemplate {
         return rs;
     }
 
+    private static String fillSqlPlaceholder(String oldSql, Object[] params) {
+        String concatedSql = oldSql;
+        for (int i = 0; i < params.length; i++) {
+            if (params[i] instanceof String) {
+                concatedSql = concatedSql.replaceFirst("\\?", "'" + params[i] + "'");
+            } else {
+                concatedSql = concatedSql.replaceFirst("\\?", "" + params[i]);
+            }
+        }
+        return concatedSql;
+    }
+
+    public static void queryOne(String sql, Object[] params, Row row) {
+        queryOne(fillSqlPlaceholder(sql, params), row);
+    }
+
     public static void queryOne(String sql, Row row) {
         PreparedStatement pr = getPreparedStatement(sql);
         ResultSet rs = getResultSet(pr);
@@ -56,6 +78,10 @@ public class DBTemplate {
         } catch (SQLException e) {
             logger.error("retrieved result set from database but can get one row data");
         }
+    }
+
+    public static <T> T queryOne(String sql, Object[] params, Class<T> type) {
+        return queryOne(fillSqlPlaceholder(sql, params), type);
     }
 
     public static <T> T queryOne(String sql, Class<T> type) {
@@ -89,17 +115,20 @@ public class DBTemplate {
 
         try {
             ArrayList<T> list = new ArrayList<>();
-
-            while (rs.next()) {
-                T object = type.newInstance();
-                Field[] fs = type.getDeclaredFields();
-                for (Field f : fs) {
-                    f.setAccessible(true);
-                    f.set(object, rs.getObject(f.getName()));
+            if (rs != null) {
+                while (rs.next()) {
+                    T object = type.newInstance();
+                    Field[] fs = type.getDeclaredFields();
+                    for (Field f : fs) {
+                        f.setAccessible(true);
+                        f.set(object, rs.getObject(f.getName()));
+                    }
+                    list.add(object);
                 }
-                list.add(object);
+                rs.close();
+            } else {
+                logger.debug("empty result set returned for sql " + sql);
             }
-            rs.close();
             pr.close();
             return list;
         } catch (SQLException e) {
@@ -110,19 +139,31 @@ public class DBTemplate {
         return null;
     }
 
+    public static <T> ArrayList<T> queryList(String sql, Object[] params, Class<T> type) {
+        return queryList(fillSqlPlaceholder(sql, params), type);
+    }
+
     public static void queryList(String sql, MultiRow multiRow) {
         PreparedStatement pr = getPreparedStatement(sql);
         ResultSet rs = getResultSet(pr);
 
         try {
-            while (rs.next()) {
-                multiRow.getMultiRow(rs);
+            if (rs != null) {
+                while (rs.next()) {
+                    multiRow.getMultiRow(rs);
+                }
+                rs.close();
+            } else {
+                logger.debug("empty result set returned for sql " + sql);
             }
-            rs.close();
             pr.close();
         } catch (SQLException e) {
             logger.error("retrieved result set from database but can not get multi row data");
         }
+    }
+
+    public static void queryList(String sql, Object[] params, MultiRow multiRow) {
+        queryList(fillSqlPlaceholder(sql, params), multiRow);
     }
 
     private Connection getConnection() {

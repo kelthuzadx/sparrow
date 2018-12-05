@@ -14,11 +14,11 @@ To use sparrow, we need add its dependencies in `pom.xml`and import it:
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.3-snapshot</version>
+    <version>1.0.5-snapshot</version>
 </dependency>
 ```
-Or you can download `sparraw.jar` and append relative dependencies into your IDE's `buildpath`
- (Not recommend since there are many dependencies and we have to download them manually and check their version one by one... that's definitely ineffective and error-prone).
+Or you can download `sparraw.jar` and append relevent dependencies into your IDE's `buildpath`
+ (Not recommend since there are many dependencies and we have to download them manually and check their version one by one... that's definitely inefficient and error-prone).
 
 
 # Integration
@@ -52,9 +52,9 @@ public class HelloSparrow {
     }
 }
 ```
-That's all we need to do if we use sparrow! We are no longer need to download tomcat server, check its version with your local jdk, configure it, write web.xml or use @WebX annotations, and so on...
+That's all we need to do if we use sparrow! We are no longer download `Tomcat server`, check its version with your local jdk, configure it, write `web.xml` or use `@WebX` annotations, and so on...
 That's so damn work for novice. Here we just open browser and access `localhost:8080/hello` we will see our works, that is, a simple greeting message:)
-And more interesting, sparrow pre-defines a `/hello` page, it shows a friendly message for those new users:
+And more interesting, sparrow pre-defines a `/hello` page, it shows a friendly message for those who are new to use it:
 
 ![](docs/hello.png)
 
@@ -132,6 +132,25 @@ DBTemplate.queryList("select * from videohub_resource", result->{
     System.out.println(result.getString("video_file_name"));
 });
 ```
+In fact, sparrow could do better. If you've used some ORM frameworks before, you will be familiar with the following style.
+To illustrate that we should define a domain class like:
+```java
+public class User {
+    private long id;
+    private String username;
+    private String password;
+    private String avatar_url;
+}
+```
+Then passing the `Class` object of that type:
+```java
+User user = DBTemplate.queryOne("select * from videohub_user where id=1", User.class);
+System.out.println(user);
+List<User> userList = DBTemplate.queryList("select * from videohub_user", User.class);
+System.out.println(userList);
+```
+Sparrow will map database columns in result set to corresponding fields of given type.
+
 As client programmer(I means, those who are using libraries to code awesome products), we don't need to
 manipulate connections, create statement, execute staetment and release resources and so on,
 all we need is to code SQL and retrieve useful column from result set.
@@ -174,8 +193,13 @@ public class DBTemplate{
     public static void queryOne(String sql, Row row);
     // Get multi rows by given sql
     public static void queryList(String sql,MultiRow multiRow);
+    // Get one row by given sql and map result columns to specific domain type
+    public static <T> T queryOne(String sql, Class<T> type);
+    // Get multi rows by given sql and map result columns to specif domain type
+    public static <T> ArrayList<T> queryList(String sql, Class<T> type);
 }
 ```
+
 ## 3.Configuration
 You can change sparrow's intrinsic behaviors by calling `Configurator` methods.
 These methods are as follows：
@@ -185,6 +209,19 @@ These methods are as follows：
 | jsp base dir | `src/main/resources/` | Configurator.setJspBase(docPath) |
 | integrate thymeleaf | Yes | Configurator.disableThymeleaf() |
 | sparrow properties namr | `sparrow.properties` | Configurator.setSparrowProperties(propertiesFileName) |
+
+# 4. Tool
+You may have to write many boilerplate codes to generate captcha, to validate user, to ...:
+here we already prepared for you:
+## Generate CAPTCHA
+```java
+import tool.CaptchaGenerator;
+
+CaptchaGenerator cg = CaptchaGenerator.simpleCaptcha(4);
+System.out.println(cg.getCaptchaCode());
+byte[] imgBinary = cg.getByteImage();
+System.out.println(imgBinary);
+```
 
 # Contribute
 Please feel free to pull your patchs and enhancements, I will accept them unless they have some fatal problems.

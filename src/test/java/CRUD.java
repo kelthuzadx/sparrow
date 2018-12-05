@@ -21,5 +21,20 @@ public class CRUD {
         System.out.println(user);
         List<User> userList = DBTemplate.queryList("select * from videohub_user", User.class);
         System.out.println(userList);
+
+
+        DBTemplate.queryOne(
+                "select * from videohub_user where id=? and username=? and password=?",
+                new Object[]{1, "yang", "123"},
+                result -> {
+                    System.out.println(result.getString("username"));
+                    System.out.println(result.getString("email"));
+                    System.out.println(result.getString("password"));
+                });
+        List<User> userList1 = DBTemplate.queryList(
+                "select * from videohub_user where id=? and username=? and password=?",
+                new Object[]{1, "yang", "123"},
+                User.class);
+        System.out.println(userList1);
     }
 }

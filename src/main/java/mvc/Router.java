@@ -32,6 +32,7 @@ public class Router {
         $r.addRouter(urlPattern, new HttpServlet() {
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+                resp.setCharacterEncoding("UTF-8");
                 handler.accept(req, resp);
             }
         });
@@ -42,6 +43,7 @@ public class Router {
         $r.addRouter(urlPattern, new HttpServlet() {
             @Override
             protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+                resp.setCharacterEncoding("UTF-8");
                 handler.accept(req, resp);
             }
         });
@@ -81,6 +83,7 @@ public class Router {
         $r.addRouter(urlPattern, new HttpServlet() {
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+                resp.setCharacterEncoding("UTF-8");
                 modelRouterImpl(handler, req, resp);
             }
         });
@@ -91,6 +94,7 @@ public class Router {
         $r.addRouter(urlPattern, new HttpServlet() {
             @Override
             protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+                resp.setCharacterEncoding("UTF-8");
                 modelRouterImpl(handler, req, resp);
             }
         });
