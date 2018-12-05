@@ -1,5 +1,6 @@
 package core;
 
+import mvc.Pair;
 import mvc.Router;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
@@ -8,7 +9,7 @@ import org.apache.log4j.Logger;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.ArrayList;
 
 class RouterManager {
     private static final Logger logger = Logger.getLogger(Sparrow.class);
@@ -44,13 +45,13 @@ class RouterManager {
             Router r = (Router) rf.get(null);
             Field f = r.getClass().getDeclaredField("$servletMap");
             f.setAccessible(true);
-            Map<String, Servlet> mappedServlet = (Map<String, Servlet>) f.get(r);
-            mappedServlet.forEach((url, servlet) -> {
+            ArrayList<Pair<String, Servlet>> mappedServlet = (ArrayList<Pair<String, Servlet>>) f.get(r);
+            mappedServlet.forEach(pair -> {
                 // NOT THAT we must use contextPath("") rather than using DEFAULT_CONTEXT_PATH since
                 // default context path "/" in stored contexts of current host is accessed via key ""
-                tomcat.addServlet("", String.valueOf(servlet), servlet);
-                internalContext.addServletMappingDecoded(url, String.valueOf(servlet));
-                logger.debug("register mapping " + url);
+                tomcat.addServlet("", String.valueOf(pair.value), pair.value);
+                internalContext.addServletMappingDecoded(pair.key, String.valueOf(pair.value));
+                logger.debug("register mapping " + pair.key);
             });
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();

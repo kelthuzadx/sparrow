@@ -23,6 +23,11 @@ public class DefineRouter {
             }
         });
 
+        Router.get("/path/{var}/{name}", model -> {
+            System.out.println("var:" + model.getPathVar("var"));
+            System.out.println("name:" + model.getPathVar("name"));
+            return View.ok();
+        });
         Sparrow.fly();
     }
 }

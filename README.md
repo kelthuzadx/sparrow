@@ -196,6 +196,14 @@ Router.get("/c",(req,resp)-> {
     }
 });
 ```
+And sparrow also allows you to specify path variables, then get the value from `Model` object:
+```java
+Router.get("/path/{var}/{name}",model -> {
+    System.out.println("var:"+model.getPathVar("var"));
+    System.out.println("name:"+model.getPathVar("name"));
+    return View.ok();
+});
+```
 
 ## 2. Database template
 Sparrow database template provides a simple way to do CRUD works
@@ -217,9 +225,7 @@ public class DBTemplate{
     public static <T> T queryOne(String sql, Object[] params, Class<T> type)
 
     // Get multi rows by parameterized sql and its arguments
-    public static <T> ArrayList<T> queryList(String sql, Class<T> type)
     public static <T> ArrayList<T> queryList(String sql, Object[] params, Class<T> type)
-    public static void queryList(String sql, MultiRow multiRow)
     public static void queryList(String sql, Object[] params, MultiRow multiRow)
 }
 ```
