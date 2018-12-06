@@ -62,6 +62,31 @@ public class DBTemplate {
         return concatedSql;
     }
 
+    public static void query(String sql, AllRows alls) {
+        PreparedStatement pr = getPreparedStatement(sql);
+        ResultSet rs = getResultSet(pr);
+
+        try {
+            alls.getResultSet(rs);
+            if (rs.next()) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+            logger.error("retrieved result set from database but can get one row data");
+        } finally {
+            try {
+                pr.close();
+            } catch (SQLException e) {
+                logger.error("failed to close prepared statement resource");
+            }
+            try {
+                dbt.con.close();
+            } catch (SQLException e) {
+                logger.error("failed to close database connection");
+            }
+        }
+    }
+
     public static void queryOne(String sql, Object[] params, Row row) {
         queryOne(fillSqlPlaceholder(sql, params), row);
     }

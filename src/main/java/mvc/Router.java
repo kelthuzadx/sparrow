@@ -91,51 +91,43 @@ public class Router {
         }
     }
 
-    public static Router get(String urlPattern, Function<Model, View> handler) {
-        Pattern pattern = Pattern.compile(".*?\\{([a-zA-Z]+?)\\}");
-        Matcher m = pattern.matcher(urlPattern);
-        boolean rewrite = false;
+    private static String rewriteUrlPattern(String urlPattern) {
+        urlPattern = urlPattern.replaceAll("\\{[a-zA-Z]+?\\}/?", "*");
+        urlPattern = urlPattern.replaceAll("\\*+", "*");
+        return urlPattern;
+    }
+
+    private static ArrayList<String> getPathVar(Matcher m) {
         ArrayList<String> pathVars = new ArrayList<>();
         while (m.find()) {
-            if (!rewrite) {
-                urlPattern = urlPattern.replaceAll("\\{[a-zA-Z]+?\\}/?", "*");
-                urlPattern = urlPattern.replaceAll("\\*+", "*");
-                System.out.println(urlPattern);
-                rewrite = true;
-            }
             pathVars.add(m.group(1));
         }
+        return pathVars;
+    }
 
-        $r.addRouter(urlPattern, new HttpServlet() {
+    public static Router get(String urlPattern, Function<Model, View> handler) {
+        Matcher m = Pattern.compile(".*?\\{([a-zA-Z]+?)\\}").matcher(urlPattern);
+        ArrayList<String> pathVar = getPathVar(m);
+
+        $r.addRouter(m.matches() ? rewriteUrlPattern(urlPattern) : urlPattern, new HttpServlet() {
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
                 resp.setCharacterEncoding("UTF-8");
-                modelRouterImpl(pathVars, handler, req, resp);
+                modelRouterImpl(pathVar, handler, req, resp);
             }
         });
         return $r;
     }
 
     public static Router post(String urlPattern, Function<Model, View> handler) {
-        Pattern pattern = Pattern.compile(".*?\\{([a-zA-Z]+?)\\}");
-        Matcher m = pattern.matcher(urlPattern);
-        boolean rewrite = false;
-        ArrayList<String> pathVars = new ArrayList<>();
-        while (m.find()) {
-            if (!rewrite) {
-                urlPattern = urlPattern.replaceAll("\\{[a-zA-Z]+?\\}/?", "*");
-                urlPattern = urlPattern.replaceAll("\\*+", "*");
-                System.out.println(urlPattern);
-                rewrite = true;
-            }
-            pathVars.add(m.group(1));
-        }
+        Matcher m = Pattern.compile(".*?\\{([a-zA-Z]+?)\\}").matcher(urlPattern);
+        ArrayList<String> pathVar = getPathVar(m);
 
-        $r.addRouter(urlPattern, new HttpServlet() {
+        $r.addRouter(m.matches() ? rewriteUrlPattern(urlPattern) : urlPattern, new HttpServlet() {
             @Override
             protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
                 resp.setCharacterEncoding("UTF-8");
-                modelRouterImpl(pathVars, handler, req, resp);
+                modelRouterImpl(pathVar, handler, req, resp);
             }
         });
         return $r;
