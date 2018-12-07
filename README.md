@@ -1,4 +1,4 @@
-# ![](docs/sparrow.png) sparrow: A pretty lightweight java web framework
+# ![](docs/sparrow.png) Sparrow: A Pretty Lightweight Java Web framework
 
 ![](https://img.shields.io/badge/project--status-under%20developing-yellow.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.racaljk/sparrow.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.racaljk%22%20AND%20a:%22sparrow%22)
@@ -6,10 +6,10 @@
 [中文](README_CN.md) |
 [English](README.md)
 
-**sparrow** is a lightweight java web framework. It's tiny and lightweight but actually contains almost all infrastructural tools and utilities for web developing. Besides, sparrow integrates some full tested third-party libraries/frameworks such as thymeleaf template engine and redis in-memory database
-so that we don't need to invent everything we use.
+**Sparrow** is a lightweight Java Web framework. 
+Light as it is, it contains tools and utilities you need in development. besides, Sparrow also integrates some fully-tested third-party frameworks to make itself more flexible.
 
-To use sparrow, we need add its dependencies in `pom.xml`and import it:
+To use Sparrow, add its dependencies and import it in `pom.xml`.
 ```xml
 <dependency>
     <groupId>com.github.racaljk</groupId>
@@ -17,12 +17,10 @@ To use sparrow, we need add its dependencies in `pom.xml`and import it:
     <version>1.0.5-snapshot</version>
 </dependency>
 ```
-Or you can download `sparraw.jar` and append relevent dependencies into your IDE's `buildpath`
- (Not recommend since there are many dependencies and we have to download them manually and check their version one by one... that's definitely inefficient and error-prone).
-
+Downloading sparrow.jar and config `buildpath` mannualy is also recommended.
 
 # Integration
-By default, sparrow integrates some widely used third-party frameworks.
+By default, sparrow integrates some popular third-party frameworks.
 You can disable them or change predefined configurations of them.
 
 | Name | Status |
@@ -32,9 +30,9 @@ You can disable them or change predefined configurations of them.
 
 
 # Demos
-## 1：hello sparrow
+## 1：Hello Sparrow
 
-Create a file named `HelloSparrow.java`:
+Create a class named `HelloSparrow.java`:
 ```java
 import java.io.IOException;
 
@@ -52,7 +50,7 @@ public class HelloSparrow {
     }
 }
 ```
-That's all we need to do if we use sparrow! We are no longer download `Tomcat server`, check its version with your local jdk, configure it, write `web.xml` or use `@WebX` annotations, and so on...
+That's all we need to do if we use sparrow! We no longer need to download `Tomcat server`, check its version with your local jdk, configure it, write `web.xml` or use `@WebX` annotations, and so on.
 That's so damn work for novice. Here we just open browser and access `localhost:8080/hello` we will see our works, that is, a simple greeting message:)
 And more interesting, sparrow pre-defines a `/hello` page, it shows a friendly message for those who are new to use it:
 
@@ -73,9 +71,9 @@ Configurator.setJspBase("my_favorite_path/");
 For more details about various configurations and their explanations, see sparrow's corresponding documentation.
 
 ## 2：User login
-Writing hello world tend to be somewhat boring, so here we will illustrate a useful login page:
+Writing hello world tend to be somewhat boring, let's take this "login page" for example:
 
-As I said before, createing a directory `src/main/resources` and putting `login.jsp` into that dir firstly：
+As I said before, create a directory `src/main/resources` and put `login.jsp` into that directory firstly：
 ```java
     <form action="/loginCheck" method="post">
         Username: <label><input name="username" type="text"/></label><br/>
@@ -84,7 +82,7 @@ As I said before, createing a directory `src/main/resources` and putting `login.
         <label><input name="submit" type="submit"/> </label>
     </form>
 ```
-Sparrow would forward user's request to `/loginCheck` as long as submit button was be clicked.
+Sparrow would "forward" user's request to `/loginCheck` as long as the submit button was clicked.
 Now we need to write corresponding login checking logic:
 
 ```java
@@ -103,9 +101,9 @@ public class LoginPage {
     }
 }
 ```
-The method `model.get()` retrives user submitted form data and match them with given username and password,
-then redirect to new age according to matching result. In a real world practise, it's more likely to query
-username and password from remote database. So let's move on next section, we will demonstrate how to use `sparrow`
+The method `model.get()` retrives form data user submitted, match them with given username and password,
+then redirect to a new age according to matching result. In a real-world practise, it's more likely to query
+username and password from remote database. So let's move on to next section, we will demonstrate how to use `sparrow`
 database template to facilitate our redundant CRUD works.
 
 ## 3: Facilitate CRUD by using sparrow database template
@@ -117,9 +115,9 @@ database.password=root
 database.url=jdbc:mysql://localhost:3306/videohub?serverTimezone=GMT
 database.driver-class=com.mysql.jdbc.Driver
 ```
-When you configured above properties, you can use sparrow database template to query
+When you configured above properties, you can use Sparrow database template to query
 by both concatenated SQL or parameterized SQL, they're pretty easy to use,
-and thanks to java 8 lambda we have even more concise code:
+and thanks to Java 8 lambda we have even more concise code:
 ```java
 DBTemplate.queryOne("select * from videohub_user where id=1", result->{
     System.out.println(result.getString("username"));
@@ -145,7 +143,7 @@ List<User> userList1 = DBTemplate.queryList(
         User.class);
 System.out.println(userList1);
 ```
-In fact, sparrow could do better. If you've used some ORM frameworks before, you will be familiar with the following style.
+In fact, Sparrow could do better. If you've used some ORM frameworks before, you will be familiar with the following style.
 To illustrate that we should define a domain class like:
 ```java
 public class User {
