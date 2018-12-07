@@ -12,7 +12,7 @@
 
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.8-snapshot</version>
+    <version>1.0.9-snapshot</version>
     <packaging>jar</packaging>
     <name>sparrow</name>
     <url>https://github.com/racaljk/sparrow</url>

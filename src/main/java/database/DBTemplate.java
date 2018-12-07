@@ -26,7 +26,8 @@ public class DBTemplate {
         }
     }
 
-    private static <T> T crudImpl(String sql, BiFunction<ResultSet, Integer, T> function) {
+    /*package*/
+    static <T> T crudImpl(String sql, BiFunction<ResultSet, Integer, T> function) {
         // prepare statement execute sql
         dbt.con = dbt.getConnection();
         PreparedStatement pr = null;
