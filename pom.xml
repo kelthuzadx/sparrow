@@ -12,11 +12,11 @@
 
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.7-snapshot</version>
+    <version>1.0.8-snapshot</version>
     <packaging>jar</packaging>
     <name>sparrow</name>
     <url>https://github.com/racaljk/sparrow</url>
-    <description>sparrow: A pretty lightweight java web framework</description>
+    <description>Sparrow: A pretty lightweight java web framework</description>
 
     <scm>
         <url>https://github.com/racaljk/sparrow</url>
