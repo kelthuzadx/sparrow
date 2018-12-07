@@ -14,7 +14,7 @@
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.3-snapshot</version>
+    <version>1.0.6-snapshot</version>
 </dependency>
 ```
 或者也可以下载sparrow jar并手动配置buildpath.准备好依赖后让我们开始吧！

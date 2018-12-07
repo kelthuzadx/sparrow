@@ -2,9 +2,9 @@ package core;
 
 public final class Configurator {
     static String propertiesFileName = "sparrow.properties";
-
     static String jspDocBase = "src/main/resources/";
     static boolean enableThymeleaf = true;
+
     // To support chain-calling
     private static Configurator conf = new Configurator();
 

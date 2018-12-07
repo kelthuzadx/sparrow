@@ -4,9 +4,8 @@ import core.PropertiesHolder;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import java.lang.reflect.Field;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.function.BiFunction;
 
 public class DBTemplate {
     private static final Logger logger = Logger.getLogger(DBTemplate.class);
@@ -27,34 +26,68 @@ public class DBTemplate {
         }
     }
 
-    private static PreparedStatement getPreparedStatement(String sql) {
+    private static <T> T crudImpl(String sql, BiFunction<ResultSet, Integer, T> function) {
+        // prepare statement execute sql
         dbt.con = dbt.getConnection();
-
         PreparedStatement pr = null;
+        ResultSet rs = null;
+        T retVal = null;
         try {
             pr = dbt.con.prepareStatement(sql);
             logger.debug("executing sql: " + sql);
         } catch (SQLException e) {
             logger.error("can not get prepared statement");
         }
-        return pr;
-    }
-
-    private static ResultSet getResultSet(PreparedStatement pr) {
-        ResultSet rs = null;
         try {
-            rs = pr.executeQuery();
+            if (pr != null) {
+                pr.execute();
+            }
         } catch (SQLException e) {
-            logger.error("can not get result set after sql executed");
+            logger.error("error occurred while performing sql statement: " + e.getMessage());
         }
-        return rs;
+
+        // execute user defined logic
+        if (function != null) {
+            try {
+                retVal = function.apply(pr.getResultSet(), pr.getUpdateCount());
+            } catch (SQLException e) {
+                logger.error("can not get result set from prepared statement");
+            }
+        }
+
+        // release resources
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+            logger.error("failed to close result set");
+        }
+        try {
+            if (pr != null) {
+                pr.close();
+            }
+        } catch (SQLException e) {
+            logger.error("failed to close prepared statement");
+        }
+        try {
+            if (dbt.con != null) {
+                dbt.con.close();
+            }
+        } catch (SQLException e) {
+            logger.error("failed to close database connection");
+        }
+        return retVal;
     }
 
     private static String fillSqlPlaceholder(String oldSql, Object[] params) {
         String concatedSql = oldSql;
         for (Object param : params) {
-            if (param instanceof String || param instanceof Date) {
+            if (param instanceof String || param instanceof java.sql.Date) {
                 concatedSql = concatedSql.replaceFirst("\\?", "'" + param + "'");
+            } else if (param instanceof java.util.Date) {
+                concatedSql = concatedSql.replaceFirst("\\?", "'" +
+                        new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(param) + "'");
             } else {
                 concatedSql = concatedSql.replaceFirst("\\?", "" + param);
             }
@@ -62,175 +95,45 @@ public class DBTemplate {
         return concatedSql;
     }
 
-    public static void query(String sql, AllRows alls) {
-        PreparedStatement pr = getPreparedStatement(sql);
-        ResultSet rs = getResultSet(pr);
-
-        try {
-            alls.getResultSet(rs);
-            if (rs.next()) {
-                rs.close();
-            }
-        } catch (SQLException e) {
-            logger.error("retrieved result set from database but can get one row data");
-        } finally {
+    public static void query(String sql, Row row) {
+        crudImpl(sql, (resultSet, affectRows) -> {
             try {
-                pr.close();
+                row.getRow(resultSet);
             } catch (SQLException e) {
-                logger.error("failed to close prepared statement resource");
+                logger.error("can not perform user callback: " + e.getMessage());
             }
-            try {
-                dbt.con.close();
-            } catch (SQLException e) {
-                logger.error("failed to close database connection");
-            }
-        }
+            return null;
+        });
     }
 
-    public static void queryOne(String sql, Object[] params, Row row) {
-        queryOne(fillSqlPlaceholder(sql, params), row);
+    public static int insert(String sql) {
+        int rows = crudImpl(sql, (resultSet, affectRows) -> affectRows);
+        return rows == -1 ? 0 : rows;
     }
 
-    public static void queryOne(String sql, Row row) {
-        PreparedStatement pr = getPreparedStatement(sql);
-        ResultSet rs = getResultSet(pr);
-
-        try {
-            if (rs != null && rs.next()) {
-                row.getRow(rs);
-                rs.close();
-            }
-        } catch (SQLException e) {
-            logger.error("retrieved result set from database but can get one row data");
-        } finally {
-            try {
-                pr.close();
-            } catch (SQLException e) {
-                logger.error("failed to close prepared statement resource");
-            }
-            try {
-                dbt.con.close();
-            } catch (SQLException e) {
-                logger.error("failed to close database connection");
-            }
-        }
+    public static int delete(String sql) {
+        return crudImpl(sql, (resultSet, affectRows) -> affectRows);
     }
 
-    public static <T> T queryOne(String sql, Object[] params, Class<T> type) {
-        return queryOne(fillSqlPlaceholder(sql, params), type);
+    public static int update(String sql) {
+        return crudImpl(sql, (resultSet, affectRows) -> affectRows);
     }
 
-    public static <T> T queryOne(String sql, Class<T> type) {
-        PreparedStatement pr = getPreparedStatement(sql);
-        ResultSet rs = getResultSet(pr);
-
-        try {
-            if (rs != null && rs.next()) {
-                T object = type.newInstance();
-
-                Field[] fs = type.getDeclaredFields();
-                for (Field f : fs) {
-                    f.setAccessible(true);
-                    f.set(object, rs.getObject(f.getName()));
-                }
-                rs.close();
-
-                return object;
-            }
-        } catch (SQLException e) {
-            logger.error("retrieved result set from database but can get one row data");
-        } catch (IllegalAccessException | InstantiationException e) {
-            logger.error("retrieved result set from database but can map columns to specific object fields");
-        } finally {
-            try {
-                pr.close();
-            } catch (SQLException e) {
-                logger.error("failed to close prepared statement resource");
-            }
-            try {
-                dbt.con.close();
-            } catch (SQLException e) {
-                logger.error("failed to close database connection");
-            }
-        }
-        return null;
+    public static void query(String sql, Object[] params, Row row) {
+        query(fillSqlPlaceholder(sql, params), row);
     }
 
-    public static <T> ArrayList<T> queryList(String sql, Class<T> type) {
-        PreparedStatement pr = getPreparedStatement(sql);
-        ResultSet rs = getResultSet(pr);
-
-        try {
-            ArrayList<T> list = new ArrayList<>();
-            if (rs != null) {
-                while (rs.next()) {
-                    T object = type.newInstance();
-                    Field[] fs = type.getDeclaredFields();
-                    for (Field f : fs) {
-                        f.setAccessible(true);
-                        f.set(object, rs.getObject(f.getName()));
-                    }
-                    list.add(object);
-                }
-                rs.close();
-            } else {
-                logger.debug("empty result set returned for sql " + sql);
-            }
-            return list;
-        } catch (SQLException e) {
-            logger.error("retrieved result set from database but can not get multi row data");
-        } catch (IllegalAccessException | InstantiationException e) {
-            logger.error("retrieved result set from database but can map columns to specific object fields");
-        } finally {
-            try {
-                pr.close();
-            } catch (SQLException e) {
-                logger.error("failed to close prepared statement resource");
-            }
-            try {
-                dbt.con.close();
-            } catch (SQLException e) {
-                logger.error("failed to close database connection");
-            }
-        }
-        return null;
+    public static int insert(String sql, Object[] params) {
+        int rows = crudImpl(fillSqlPlaceholder(sql, params), (resultSet, affectRows) -> affectRows);
+        return rows == -1 ? 0 : rows;
     }
 
-    public static <T> ArrayList<T> queryList(String sql, Object[] params, Class<T> type) {
-        return queryList(fillSqlPlaceholder(sql, params), type);
+    public static int delete(String sql, Object[] params) {
+        return crudImpl(fillSqlPlaceholder(sql, params), (resultSet, affectRows) -> affectRows);
     }
 
-    public static void queryList(String sql, MultiRow multiRow) {
-        PreparedStatement pr = getPreparedStatement(sql);
-        ResultSet rs = getResultSet(pr);
-
-        try {
-            if (rs != null) {
-                while (rs.next()) {
-                    multiRow.getMultiRow(rs);
-                }
-                rs.close();
-            } else {
-                logger.debug("empty result set returned for sql " + sql);
-            }
-        } catch (SQLException e) {
-            logger.error("retrieved result set from database but can not get multi row data");
-        } finally {
-            try {
-                pr.close();
-            } catch (SQLException e) {
-                logger.error("failed to close prepared statement resource");
-            }
-            try {
-                dbt.con.close();
-            } catch (SQLException e) {
-                logger.error("failed to close database connection");
-            }
-        }
-    }
-
-    public static void queryList(String sql, Object[] params, MultiRow multiRow) {
-        queryList(fillSqlPlaceholder(sql, params), multiRow);
+    public static int update(String sql, Object[] params) {
+        return crudImpl(fillSqlPlaceholder(sql, params), (resultSet, affectRows) -> affectRows);
     }
 
     private Connection getConnection() {

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -55,6 +56,13 @@ public class Router {
                                         HttpServletRequest req, HttpServletResponse resp) {
         // Prepare model data
         Model dataModel = new Model(req.getParameterMap());
+
+        Enumeration<String> sessionAttrs = req.getSession().getAttributeNames();
+        while (sessionAttrs.hasMoreElements()) {
+            String sessionAttr = sessionAttrs.nextElement();
+            dataModel.set(sessionAttr, req.getSession().getAttribute(sessionAttr));
+        }
+
         String uri = req.getRequestURI();
         String[] spans = uri.split("/");
         for (int i = spans.length - 1, k = pathVars.size() - 1; i >= 0 && k >= 0; i--, k--) {

@@ -61,7 +61,7 @@ public final class Sparrow {
     private void serve() {
         try {
             tomcat.start();
-            logger.debug("Sparrow started");
+            logger.info("Sparrow started");
             tomcat.getServer().await();
         } catch (LifecycleException e) {
             e.printStackTrace();

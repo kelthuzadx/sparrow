@@ -14,7 +14,7 @@ To use Sparrow, add its dependencies and import it in `pom.xml`.
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.5-snapshot</version>
+    <version>1.0.6-snapshot</version>
 </dependency>
 ```
 Downloading sparrow.jar and config `buildpath` mannualy is also recommended.
