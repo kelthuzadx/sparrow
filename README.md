@@ -31,18 +31,13 @@ You can disable them or change predefined configurations of them.
 
 
 # Documentation
-## 0. [Demos(recommend)](docs/demos.md)
-## 1. [Router](docs/router.md)
-
-## 2. [Datebase template and orm template](docs/database_template.md)
-
-## 3. [Configuration](docs/configuration.md)
-
-## 4. Tool
-You may have to write many boilerplate codes to generate captcha, to validate form data requested by clients, to ...:
-That's no longer necessary if you intend to use sparrow, since we already prepared them as originally provided tools for you:
-+ [generate captcha](docs/generate_captcha.md)
-+ [send email](docs/send_email.md)
++ [0. Demos(recommend)](docs/demos.md)
++ [1. Router](docs/router.md)
++ [2. Datebase template and orm template](docs/database_template.md)
++ [3. Configuration](docs/configuration.md)
++ [4. Utilities]()
+    + [generate captcha](docs/generate_captcha.md)
+    + [send email](docs/send_email.md)
 
 # Contribute
 Please feel free to pull your patchs and enhancements, I will accept them unless they have some fatal problems.
