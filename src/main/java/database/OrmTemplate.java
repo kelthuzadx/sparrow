@@ -9,6 +9,10 @@ import java.util.ArrayList;
 public class OrmTemplate {
     private static final Logger logger = Logger.getLogger(DBTemplate.class);
 
+    public static <T> T queryOne(String sql, String[] params, Class<T> type) {
+        return queryOne(DBTemplate.fillSqlPlaceholder(sql, params), type);
+    }
+
     public static <T> T queryOne(String sql, Class<T> type) {
         return DBTemplate.crudImpl(sql, (resultSet, affectRows) -> {
             T retVal = null;
@@ -29,6 +33,10 @@ public class OrmTemplate {
             }
             return retVal;
         });
+    }
+
+    public static <T> ArrayList<T> queryList(String sql, String[] params, Class<T> type) {
+        return queryList(DBTemplate.fillSqlPlaceholder(sql, params), type);
     }
 
     public static <T> ArrayList<T> queryList(String sql, Class<T> type) {

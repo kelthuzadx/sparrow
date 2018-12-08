@@ -81,7 +81,7 @@ public class DBTemplate {
         return retVal;
     }
 
-    private static String fillSqlPlaceholder(String oldSql, Object[] params) {
+    static String fillSqlPlaceholder(String oldSql, Object[] params) {
         String concatedSql = oldSql;
         for (Object param : params) {
             if (param instanceof String || param instanceof java.sql.Date) {

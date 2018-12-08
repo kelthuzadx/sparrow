@@ -7,17 +7,19 @@
 [English](README.md)
 
 **Sparrow** is a lightweight Java Web framework. 
-Light as it is, it contains tools and utilities you need in development. besides, Sparrow also integrates some fully-tested third-party frameworks to make itself more flexible.
+Lightweight as it is, it contains tools and utilities you need in development. besides, Sparrow also integrates some fully-tested third-party frameworks to make itself more flexible.
 
 To use Sparrow, add its dependencies and import it in `pom.xml`.
 ```xml
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.0.8-snapshot</version>
+    <version>1.1.0-snapshot</version>
 </dependency>
 ```
-Downloading sparrow.jar and config `buildpath` mannualy is also recommended.
+Or you can download sparraw.jar and append relevent dependencies into your IDE's buildpath (Not recommend since there are many dependencies and we have to download them manually and check their version one by one... that's definitely inefficient and error-prone).
+
+![](docs/split.png)
 
 # Integration
 By default, sparrow integrates some popular third-party frameworks.
