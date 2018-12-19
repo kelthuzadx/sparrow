@@ -13,7 +13,7 @@ To use Sparrow, add its dependencies and import it.
 <dependency>
     <groupId>com.github.racaljk</groupId>
     <artifactId>sparrow</artifactId>
-    <version>1.1.0-snapshot</version>
+    <version>1.1.1-snapshot</version>
 </dependency>
 ```
 Or you can download sparraw.jar and append relevent dependencies into your IDE's buildpath (Not recommend since there are many dependencies and we have to download them manually and check their version one by one... that's definitely inefficient and error-prone).

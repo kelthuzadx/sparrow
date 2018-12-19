@@ -26,7 +26,11 @@ public class DefineRouter {
         Router.get("/path/{var}/{name}", model -> {
             System.out.println("var:" + model.getPathVar("var"));
             System.out.println("name:" + model.getPathVar("name"));
-            return View.create("xxx.jsp");
+            return View.ok();
+        });
+        Router.get("/path2/{var}", model -> {
+            System.out.println("var:" + model.getPathVar("var"));
+            return View.ok();
         });
         Sparrow.fly();
     }

@@ -82,6 +82,9 @@ public class Router {
             WebContext ctx =
                     new WebContext(req, resp, req.getServletContext(), req.getLocale());
             try {
+                // We must set response content type so that browser would render
+                // response page rather than dumping context directly
+                resp.setContentType("text/html;charset=UTF-8");
                 getTemplateEngine().process(view.getViewPath(), ctx, resp.getWriter());
             } catch (IOException e) {
                 e.printStackTrace();
